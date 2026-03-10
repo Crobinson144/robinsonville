@@ -60,6 +60,17 @@ h3 {
     align-items: center;
 }
 
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.crest-icon {
+    height: 50px;
+    width: auto;
+}
+
 .logo-text {
     font-family: 'Playfair Display', serif;
     font-size: 1.2rem;
@@ -217,13 +228,13 @@ h3 {
 /* Responsive */
 @media (max-width: 768px) {
     .nav-links {
-        flex-direction: column;
-        gap: 1rem;
+        display: none;
     }
     
-    .nav-container {
-        flex-direction: column;
-        gap: 1rem;
+    .mobile-menu-btn {
+        display: block;
+        color: white;
+        font-size: 1.5rem;
     }
     
     section {
@@ -236,26 +247,11 @@ h3 {
         font-size: 2.2rem;
     }
     
-    .youth-grid,
-    .workshops-grid {
-        grid-template-columns: 1fr;
+    .logo-text {
+        font-size: 1rem;
     }
-}
-.crest-icon {
-    height: 70px;
-    width: auto;
-    margin-right: 20px;
-    vertical-align: middle;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-}
-.logo-text {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.4rem;  /* ADJUST IF NEEDED */
-    font-weight: 600;
-    color: #FFFFFF;
-    letter-spacing: 1px;
+    
+    .crest-icon {
+        height: 40px;
+    }
 }
