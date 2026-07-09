@@ -255,3 +255,148 @@ h3 {
         height: 40px;
     }
 }
+/* ============================================
+   BUTTONS  (site-wide — none existed before)
+   ============================================ */
+.btn {
+    display: inline-block;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.9rem 2.2rem;
+    border: 2px solid #000000;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Primary = solid black, silver on hover (matches nav/footer) */
+.btn-primary {
+    background-color: #000000;
+    color: #FFFFFF;
+    border-color: #000000;
+}
+.btn-primary:hover {
+    background-color: #C0C0C0;
+    color: #000000;
+    border-color: #C0C0C0;
+}
+
+/* Secondary = outline, fills on hover (for inquire/enroll CTAs) */
+.btn-secondary {
+    background-color: transparent;
+    color: #000000;
+    border-color: #000000;
+}
+.btn-secondary:hover {
+    background-color: #000000;
+    color: #FFFFFF;
+}
+
+/* Hero button spacing */
+.hero-robinsonville .btn {
+    margin-top: 1.8rem;
+}
+
+/* ============================================
+   THE BOOK SECTION
+   ============================================ */
+.book-feature {
+    padding: 5rem 0;
+    border-bottom: 1px solid #C0C0C0;
+    background: linear-gradient(135deg, #F5F5F5 0%, #FFFFFF 100%);
+}
+
+.book-feature-container {
+    display: flex;
+    align-items: center;
+    gap: 3.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+}
+
+.book-feature-image {
+    flex: 0 0 300px;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.book-feature-image .book-cover-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    border: 1px solid #C0C0C0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.book-feature-content {
+    flex: 1;
+    min-width: 300px;
+}
+
+.book-feature-content h3 {
+    font-size: 2rem;
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0.4rem;
+}
+
+.book-tagline {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.15rem;
+    color: #000000;
+    opacity: 0.6;
+    margin-bottom: 1.2rem;
+}
+
+.book-feature-content p {
+    color: #000000;
+    opacity: 0.85;
+    margin-bottom: 1rem;
+}
+
+.book-formats {
+    font-weight: 700;
+    opacity: 1 !important;
+    margin-bottom: 1.5rem !important;
+}
+
+/* ============================================
+   SECTION CTA (inquire / enroll blocks)
+   ============================================ */
+.section-cta {
+    text-align: center;
+    margin-top: 3rem;
+}
+
+.section-cta p {
+    font-size: 1.1rem;
+    color: #000000;
+    opacity: 0.7;
+    margin-bottom: 1.2rem;
+}
+
+/* Contact section button spacing */
+.contact-email-line {
+    text-align: center;
+}
+
+/* ============================================
+   RESPONSIVE — book section stacks on mobile
+   ============================================ */
+@media (max-width: 768px) {
+    .book-feature-container {
+        gap: 2rem;
+        text-align: center;
+    }
+    .book-feature-content {
+        min-width: 100%;
+    }
+    .book-feature-content h3 {
+        font-size: 1.6rem;
+    }
+}
