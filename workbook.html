@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Family Workbook | Your Children's Children</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1a1a1a; --black:#000; --gold:#d9a441; --gold-dark:#c48f2e;
+    --silver:#c0c0c0; --paper:#fff; --muted:#6b6b6b; --line:#dcdcdc;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Lato',sans-serif;color:var(--ink);background:#ececec;line-height:1.6;}
+
+  /* Toolbar */
+  .toolbar{
+    position:sticky;top:0;z-index:50;background:var(--black);
+    display:flex;justify-content:space-between;align-items:center;
+    padding:0.85rem 1.5rem;border-bottom:2px solid var(--gold);
+  }
+  .toolbar .tt{font-family:'Playfair Display',serif;color:#fff;font-size:1.05rem;letter-spacing:1px;}
+  .toolbar .tt span{color:var(--gold);}
+  .print-btn{
+    font-family:'Lato',sans-serif;font-weight:700;font-size:0.85rem;letter-spacing:1.5px;
+    text-transform:uppercase;color:#1a1a1a;background:var(--gold);border:2px solid var(--gold);
+    padding:0.6rem 1.4rem;border-radius:3px;cursor:pointer;transition:all .2s ease;
+  }
+  .print-btn:hover{background:var(--gold-dark);border-color:var(--gold-dark);transform:translateY(-1px);}
+
+  /* Page sheet */
+  .sheet{max-width:820px;margin:2rem auto;background:var(--paper);padding:3.5rem 3.5rem 2rem;box-shadow:0 4px 24px rgba(0,0,0,.12);}
+
+  /* Masthead */
+  .masthead{text-align:center;border-bottom:2px solid var(--black);padding-bottom:1.8rem;margin-bottom:2rem;}
+  .masthead .eyebrow{font-family:'Lato';font-size:0.72rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-dark);margin-bottom:0.7rem;}
+  .masthead h1{font-family:'Playfair Display',serif;font-weight:700;font-size:2.6rem;color:var(--black);line-height:1.1;}
+  .masthead .sub{font-size:1.05rem;color:var(--muted);margin-top:0.5rem;font-style:italic;}
+  .howto{background:#faf7f0;border-left:3px solid var(--gold);padding:0.9rem 1.2rem;margin-top:1.6rem;font-size:0.92rem;color:#4a4a4a;text-align:left;}
+  .howto b{color:var(--black);}
+
+  /* Worksheet */
+  .worksheet{padding:2.4rem 0;border-bottom:1px solid var(--line);}
+  .worksheet:last-of-type{border-bottom:none;}
+  .ws-num{font-family:'Lato';font-size:0.75rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-dark);}
+  .ws-title{font-family:'Playfair Display',serif;font-weight:700;font-size:1.9rem;color:var(--black);line-height:1.1;margin:0.15rem 0 0.5rem;}
+  .ws-purpose{font-size:0.95rem;color:var(--muted);margin-bottom:1.6rem;max-width:60ch;}
+  .ws-purpose b{color:#3a3a3a;font-style:normal;}
+
+  .step-label{font-family:'Playfair Display',serif;font-weight:600;font-size:1.12rem;color:var(--black);margin:1.4rem 0 0.3rem;}
+  .field-label{display:block;font-size:0.92rem;font-weight:700;color:#333;margin:1rem 0 0.35rem;}
+  .hint{font-size:0.82rem;color:var(--muted);margin:0.15rem 0 0.5rem;font-style:italic;}
+  .examples{font-size:0.85rem;color:#555;background:#f6f6f6;border-radius:4px;padding:0.6rem 0.9rem;margin:0.3rem 0 0.6rem;}
+  .examples b{color:#333;font-style:normal;}
+
+  input[type=text], input[type=number], textarea{
+    font-family:'Lato',sans-serif;font-size:0.98rem;color:var(--ink);width:100%;
+    background:transparent;border:none;border-bottom:1.5px solid var(--silver);
+    padding:0.4rem 0.2rem;transition:border-color .2s;resize:none;
+  }
+  textarea{border:1.5px solid var(--line);border-radius:4px;padding:0.6rem;line-height:1.7;overflow:hidden;min-height:3.2rem;}
+  input:focus, textarea:focus{outline:none;border-color:var(--gold);}
+  input::placeholder, textarea::placeholder{color:#bbb;}
+
+  /* Asset table (worksheet 3 + 4) */
+  table.grid{width:100%;border-collapse:collapse;margin:0.6rem 0 0.4rem;}
+  table.grid th{font-size:0.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#555;text-align:left;padding:0.5rem 0.6rem;border-bottom:2px solid var(--black);}
+  table.grid td{padding:0.15rem 0.6rem;border-bottom:1px solid var(--line);}
+  table.grid td input{border-bottom:none;}
+  table.grid td.rowlabel{font-weight:700;color:#333;font-size:0.92rem;width:40%;}
+  .total-row td{border-bottom:none;border-top:2px solid var(--black);padding-top:0.7rem;}
+  .total-row td.rowlabel{font-family:'Playfair Display',serif;font-size:1.05rem;}
+  #net-worth-total{font-family:'Lato';font-weight:700;font-size:1.05rem;color:var(--gold-dark);border:none;background:transparent;}
+  .add-row{font-family:'Lato';font-weight:700;font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;color:var(--gold-dark);background:none;border:1.5px dashed var(--silver);border-radius:4px;padding:0.5rem 1rem;cursor:pointer;margin-top:0.7rem;transition:all .2s;}
+  .add-row:hover{border-color:var(--gold);color:var(--black);}
+
+  /* Metrics grid (worksheet 7) */
+  .metric-group{margin-bottom:1.3rem;}
+  .metric-group h4{font-family:'Playfair Display',serif;font-weight:600;font-size:1.05rem;color:var(--black);margin-bottom:0.5rem;padding-bottom:0.25rem;border-bottom:1px solid var(--gold);display:inline-block;}
+  .metric-row{display:flex;align-items:center;gap:1rem;padding:0.35rem 0;border-bottom:1px dotted var(--line);}
+  .metric-row label{flex:1;font-size:0.92rem;color:#333;}
+  .metric-row input{width:120px;text-align:right;}
+
+  /* Yes/No */
+  .yesno{display:inline-flex;gap:1.4rem;margin:0.4rem 0 0.2rem;}
+  .yesno label{font-size:0.95rem;color:#333;display:inline-flex;align-items:center;gap:0.4rem;cursor:pointer;}
+  .yesno input{width:16px;height:16px;accent-color:var(--gold-dark);}
+
+  /* phase blocks (worksheet 8) */
+  .phase{border-left:3px solid var(--gold);padding:0.2rem 0 0.2rem 1rem;margin:1rem 0;}
+  .phase .ph-title{font-family:'Playfair Display',serif;font-weight:600;font-size:1.08rem;color:var(--black);}
+  .phase .ph-sub{font-size:0.82rem;color:var(--muted);margin-bottom:0.4rem;}
+  .schedule{background:#faf7f0;border-radius:4px;padding:0.9rem 1.1rem;margin-top:1rem;font-size:0.88rem;color:#4a4a4a;}
+  .schedule b{color:var(--black);}
+
+  .closer{text-align:center;font-family:'Playfair Display',serif;font-style:italic;font-size:1.2rem;color:var(--black);margin:1rem 0 0.4rem;}
+  .kicker{text-align:center;font-size:0.85rem;color:var(--muted);font-style:italic;margin-top:0.8rem;}
+
+  .colophon{text-align:center;font-size:0.78rem;color:var(--muted);border-top:1px solid var(--line);margin-top:1.5rem;padding-top:1.2rem;}
+  .colophon b{color:#333;}
+
+  @media (max-width:640px){
+    .sheet{padding:1.8rem 1.3rem;margin:0.8rem;}
+    .masthead h1{font-size:1.9rem;}
+    .ws-title{font-size:1.5rem;}
+    .metric-row{flex-direction:column;align-items:flex-start;gap:0.3rem;}
+    .metric-row input{width:100%;text-align:left;}
+    .toolbar .tt{font-size:0.85rem;}
+  }
+
+  /* ---------- PRINT ---------- */
+  @media print{
+    body{background:#fff;}
+    .toolbar, .add-row{display:none !important;}
+    .sheet{box-shadow:none;margin:0;max-width:100%;padding:0.3in 0.15in;}
+    .worksheet{break-before:page;border-bottom:none;padding:0.2in 0 0;}
+    .masthead{break-after:avoid;}
+    input[type=text], input[type=number]{border-bottom:1px solid #000;}
+    textarea{border:1px solid #999;}
+    .howto, .schedule, .examples{background:#f4f4f4 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    @page{margin:0.5in;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <div class="tt">The Family Workbook <span>· YCC</span></div>
+    <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+  </div>
+
+  <div class="sheet">
+
+    <div class="masthead">
+      <div class="eyebrow">Your Children's Children</div>
+      <h1>The Family Workbook</h1>
+      <p class="sub">Practical tools for building your children's children</p>
+      <div class="howto">
+        These worksheets are meant to be written in. <b>Fill them in here and print your copy</b>, or print them blank and fill them in by hand. The act of writing is what turns intention into structure. Revisit each on the schedule it suggests.
+      </div>
+    </div>
+
+    <!-- WORKSHEET 1 -->
+    <section class="worksheet">
+      <div class="ws-num">Worksheet 01</div>
+      <h2 class="ws-title">Family Vision</h2>
+      <p class="ws-purpose"><b>Purpose.</b> To define who your family is before defining what your family owns.</p>
+
+      <div class="step-label">Step 1 — Identity Statement</div>
+      <label class="field-label">Complete the sentence: "In our family, we are the kind of people who…"</label>
+      <div class="examples"><b>Examples:</b> build before we consume · keep our word · prepare before pressure · invest before upgrading</div>
+      <textarea rows="2" placeholder="In our family, we are the kind of people who…"></textarea>
+
+      <div class="step-label">Step 2 — 20-Year Direction</div>
+      <label class="field-label">In 20 years, we want our family to be known for:</label>
+      <textarea rows="2"></textarea>
+      <label class="field-label">Financially, we want to have:</label>
+      <textarea rows="2"></textarea>
+      <label class="field-label">Relationally, we want to maintain:</label>
+      <textarea rows="2"></textarea>
+
+      <div class="step-label">Step 3 — Non-Negotiables</div>
+      <label class="field-label">What will we never compromise for money?</label>
+      <textarea rows="2"></textarea>
+      <p class="kicker">Clarity now prevents confusion later.</p>
+    </section>
+
+    <!-- WORKSHEET 2 -->
+    <section class="worksheet">
+      <div class="ws-num">Worksheet 02</div>
+      <h2 class="ws-title">Shared Values Alignment</h2>
+      <p class="ws-purpose"><b>Purpose.</b> To ensure all adult family members define wealth the same way. Each person answers individually, then the family compares answers and discusses the differences calmly. <em>Tip: print one copy per adult.</em></p>
+
+      <label class="field-label">1. What does "wealth" mean to you?</label>
+      <textarea rows="2"></textarea>
+      <label class="field-label">2. What is more important than money?</label>
+      <textarea rows="2"></textarea>
+      <label class="field-label">3. What behavior would embarrass our family name?</label>
+      <textarea rows="2"></textarea>
+      <p class="kicker">Alignment prevents fragmentation.</p>
+    </section>
+
+    <!-- WORKSHEET 3 -->
+    <section class="worksheet">
+      <div class="ws-num">Worksheet 03</div>
+      <h2 class="ws-title">Annual Wealth Review</h2>
+      <p class="ws-purpose"><b>Purpose.</b> A once-a-year (minimum) check on what the family owns, what changed, and what threatens stability.</p>
+
+      <div class="step-label">Section A — Asset Inventory</div>
+      <table class="grid">
+        <thead><tr><th>Item</th><th style="text-align:right">Value ($)</th></tr></thead>
+        <tbody>
+          <tr><td class="rowlabel">Cash / Savings</td><td><input type="number" class="asset-value" placeholder="0" oninput="calcNetWorth()"></td></tr>
+          <tr><td class="rowlabel">Investments</td><td><input type="number" class="asset-value" placeholder="0" oninput="calcNetWorth()"></td></tr>
+          <tr><td class="rowlabel">Real Estate</td><td><input type="number" class="asset-value" placeholder="0" oninput="calcNetWorth()"></td></tr>
+          <tr><td class="rowlabel">Business Ownership</td><td><input type="number" class="asset-value" placeholder="0" oninput="calcNetWorth()"></td></tr>
+          <tr><td class="rowlabel">Other Assets</td><td><input type="number" class="asset-value" placeholder="0" oninput="calcNetWorth()"></td></tr>
+          <tr class="total-row"><td class="rowlabel">Total Estimated Net Worth</td><td style="text-align:left"><input type="text" id="net-worth-total" value="$0" readonly></td></tr>
+        </tbody>
+      </table>
+
+      <div class="step-label">Section B — Growth Review</div>
+      <label class="field-label">1. What improved this year?</label>
+      <textarea rows="2"></textarea>
+      <label class="field-label">2. What declined?</label>
+      <textarea rows="2"></textarea>
+      <label class="field-label">3. What decisions created progress?</label>
+      <textarea rows="2"></textarea>
+      <label class="field-label">4. What mistakes need correction?</label>
+      <textarea rows="2"></textarea>
+
+      <div class="step-label">Section C — Risk Review</div>
+      <p class="hint">Common risks to weigh: market risk · concentration risk · leadership dependency · legal gaps · behavioral risk.</p>
+      <label class="field-label">List your top three current risks:</label>
+      <input type="text" placeholder="1."><br>
+      <input type="text" placeholder="2." style="margin-top:0.6rem"><br>
+      <input type="text" placeholder="3." style="margin-top:0.6rem">
+    </section>
+
+    <!-- WORKSHEET 4 -->
+    <section class="worksheet">
+      <div class="ws-num">Worksheet 04</div>
+      <h2 class="ws-title">Asset Inventory Tracker</h2>
+      <p class="ws-purpose"><b>Purpose.</b> A master record of every asset — what it is, who owns it, what it earns, and where the paperwork lives.</p>
+
+      <table class="grid" id="tracker">
+        <thead><tr><th>Asset</th><th>Owner</th><th>Value</th><th>Monthly income</th><th>Risk</th><th>Paperwork location</th></tr></thead>
+        <tbody id="tracker-body">
+          <!-- rows injected -->
+        </tbody>
+      </table>
+      <button class="add-row" onclick="addTrackerRow()">+ Add asset</button>
+      <p class="kicker">Visibility prevents confusion. Confusion destroys continuity.</p>
+    </section>
+
+    <!-- WORKSHEET 5 -->
+    <section class="worksheet">
+      <div class="ws-num">Worksheet 05</div>
+      <h2 class="ws-title">Succession Clarity</h2>
+      <p class="ws-purpose"><b>Purpose.</b> To confirm that authority transfers cleanly if leadership becomes unavailable.</p>
+
+      <label class="field-label">Who currently makes final decisions?</label>
+      <input type="text">
+      <label class="field-label">If that person becomes unavailable tomorrow, who assumes authority?</label>
+      <input type="text">
+      <label class="field-label">Is that documented legally?</label>
+      <div class="yesno">
+        <label><input type="checkbox"> Yes</label>
+        <label><input type="checkbox"> No</label>
+      </div>
+      <label class="field-label">Do all adult members understand the transition plan?</label>
+      <div class="yesno">
+        <label><input type="checkbox"> Yes</label>
+        <label><input type="checkbox"> No</label>
+      </div>
+    </section>
+
+    <!-- WORKSHEET 6 -->
+    <section class="worksheet">
+      <div class="ws-num">Worksheet 06</div>
+      <h2 class="ws-title">Intergenerational Dialogue Prompts</h2>
+      <p class="ws-purpose"><b>Purpose.</b> Use these quarterly with children or adult heirs. Conversation builds confidence; silence builds insecurity.</p>
+
+      <label class="field-label">1. What does money represent in our family?</label>
+      <textarea rows="2"></textarea>
+      <label class="field-label">2. What worries you about financial responsibility?</label>
+      <textarea rows="2"></textarea>
+      <label class="field-label">3. What excites you about building something long-term?</label>
+      <textarea rows="2"></textarea>
+      <label class="field-label">4. What skill do you want to develop this year?</label>
+      <textarea rows="2"></textarea>
+      <label class="field-label">5. What distracted you most recently?</label>
+      <textarea rows="2"></textarea>
+    </section>
+
+    <!-- WORKSHEET 7 -->
+    <section class="worksheet">
+      <div class="ws-num">Worksheet 07</div>
+      <h2 class="ws-title">Measurement Dashboard</h2>
+      <p class="ws-purpose"><b>Purpose.</b> Track a few honest numbers every year. What gets measured improves; what gets ignored drifts.</p>
+
+      <div class="metric-group">
+        <h4>Financial Metrics</h4>
+        <div class="metric-row"><label>Net worth growth %</label><input type="text"></div>
+        <div class="metric-row"><label>Savings rate %</label><input type="text"></div>
+        <div class="metric-row"><label>Investment return %</label><input type="text"></div>
+        <div class="metric-row"><label>Debt ratio</label><input type="text"></div>
+      </div>
+      <div class="metric-group">
+        <h4>Behavioral Metrics</h4>
+        <div class="metric-row"><label>Reading hours / month</label><input type="text"></div>
+        <div class="metric-row"><label>Skill hours / month</label><input type="text"></div>
+        <div class="metric-row"><label>Screen discipline rating (1–10)</label><input type="text"></div>
+        <div class="metric-row"><label>Meeting attendance %</label><input type="text"></div>
+      </div>
+      <div class="metric-group">
+        <h4>Leadership Metrics</h4>
+        <div class="metric-row"><label>Decision clarity score (1–10)</label><input type="text"></div>
+        <div class="metric-row"><label>Conflict resolution efficiency</label><input type="text"></div>
+        <div class="metric-row"><label>Documentation completeness %</label><input type="text"></div>
+      </div>
+    </section>
+
+    <!-- WORKSHEET 8 -->
+    <section class="worksheet">
+      <div class="ws-num">Worksheet 08</div>
+      <h2 class="ws-title">10-Year Family Stability Plan</h2>
+      <p class="ws-purpose"><b>Purpose.</b> A long horizon broken into three phases, with capital targets and a recurring schedule.</p>
+
+      <div class="phase">
+        <div class="ph-title">Years 1–3 · Stability &amp; Documentation</div>
+        <div class="ph-sub">Primary goals</div>
+        <textarea rows="2"></textarea>
+      </div>
+      <div class="phase">
+        <div class="ph-title">Years 4–6 · Asset Growth &amp; Leadership Training</div>
+        <div class="ph-sub">Primary goals</div>
+        <textarea rows="2"></textarea>
+      </div>
+      <div class="phase">
+        <div class="ph-title">Years 7–10 · Transfer Readiness &amp; Advanced Structure</div>
+        <div class="ph-sub">Primary goals</div>
+        <textarea rows="2"></textarea>
+      </div>
+
+      <div class="step-label">Capital Targets (10-Year Horizon)</div>
+      <label class="field-label">Target Net Worth</label>
+      <input type="text">
+      <label class="field-label">Target Passive Income</label>
+      <input type="text">
+      <label class="field-label">Target Investment Allocation</label>
+      <input type="text">
+
+      <div class="schedule">
+        <b>Implementation Schedule</b><br>
+        <b>Monthly:</b> capital review · skill tracking · family dialogue<br>
+        <b>Quarterly:</b> asset review · attention audit · leadership role discussion<br>
+        <b>Annually:</b> full wealth review · succession clarity check · value alignment conversation
+      </div>
+
+      <p class="closer">Consistency beats intensity.</p>
+    </section>
+
+    <div class="colophon">
+      From <b>Your Children's Children</b> by Chinua Eric Robinson · Robinsonville Financial Network™<br>
+      © 2026 · All rights reserved
+    </div>
+
+  </div>
+
+<script>
+  // Auto-grow textareas so printed pages show all written content
+  function grow(el){ el.style.height='auto'; el.style.height=(el.scrollHeight)+'px'; }
+  document.querySelectorAll('textarea').forEach(function(t){
+    t.addEventListener('input',function(){grow(t);});
+    grow(t);
+  });
+
+  // Live net-worth total (Worksheet 3)
+  function calcNetWorth(){
+    var sum=0;
+    document.querySelectorAll('.asset-value').forEach(function(i){
+      var v=parseFloat(i.value); if(!isNaN(v)) sum+=v;
+    });
+    document.getElementById('net-worth-total').value =
+      '$'+sum.toLocaleString('en-US',{maximumFractionDigits:0});
+  }
+
+  // Asset Inventory Tracker rows (Worksheet 4)
+  function trackerRow(){
+    var tr=document.createElement('tr');
+    tr.innerHTML =
+      '<td><input type="text"></td>'+
+      '<td><input type="text"></td>'+
+      '<td><input type="text" placeholder="$"></td>'+
+      '<td><input type="text" placeholder="$/mo"></td>'+
+      '<td><input type="text"></td>'+
+      '<td><input type="text"></td>';
+    return tr;
+  }
+  function addTrackerRow(){ document.getElementById('tracker-body').appendChild(trackerRow()); }
+  // seed 4 blank rows
+  for(var r=0;r<4;r++){ addTrackerRow(); }
+</script>
+</body>
+</html>
