@@ -151,10 +151,20 @@
   ul.checklist input{width:18px;height:18px;accent-color:var(--gold-dark);}
   .chk-note{display:block;font-size:0.82rem;color:var(--muted);margin:0.2rem 0 0 1.8rem;}
 
+  /* Buy CTA — screen-only conversion block at the end */
+  .buy-cta{text-align:center;background:linear-gradient(135deg,#1a1a1a 0%,#000 100%);color:#fff;border-radius:8px;padding:2.6rem 2rem;margin:2.5rem 0 1rem;}
+  .buy-eyebrow{font-size:0.72rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:0.6rem;}
+  .buy-head{font-family:'Playfair Display',serif;font-weight:700;font-size:1.8rem;color:#fff;margin-bottom:0.7rem;line-height:1.15;}
+  .buy-body{font-size:0.98rem;color:#d8d8d8;max-width:52ch;margin:0 auto 1.5rem;line-height:1.6;}
+  .buy-body em{color:#fff;font-style:italic;}
+  .buy-cta-btn{display:inline-block;font-family:'Lato';font-weight:700;font-size:1.05rem;letter-spacing:1px;text-transform:uppercase;color:#1a1a1a;background:var(--gold);border:2px solid var(--gold);border-radius:4px;padding:1rem 2.4rem;text-decoration:none;box-shadow:0 4px 18px rgba(217,164,65,0.4);transition:all .25s ease;}
+  .buy-cta-btn:hover{background:var(--gold-dark);border-color:var(--gold-dark);transform:translateY(-2px);box-shadow:0 6px 24px rgba(217,164,65,0.55);}
+  .buy-formats{font-size:0.8rem;color:#9a9a9a;margin-top:0.9rem;letter-spacing:0.5px;}
+
   /* ---------- PRINT ---------- */
   @media print{
     body{background:#fff;}
-    .toolbar, .add-row{display:none !important;}
+    .toolbar, .add-row, .buy-cta{display:none !important;}
     .sheet{box-shadow:none;margin:0;max-width:100%;padding:0.3in 0.15in;}
     .worksheet{break-before:page;border-bottom:none;padding:0.2in 0 0;}
     .masthead{break-after:avoid;}
@@ -468,6 +478,15 @@
       <label class="field-label">What could I improve tomorrow?</label>
       <textarea rows="1"></textarea>
       <p class="kicker">Consistency at 14 creates advantage at 24.</p>
+    </section>
+
+    <!-- CONVERSION: soft buy prompt at peak intent (screen only) -->
+    <section class="buy-cta">
+      <div class="buy-eyebrow">Want the full framework?</div>
+      <h2 class="buy-head">This workbook is one part of the book.</h2>
+      <p class="buy-body">The worksheets you just filled come from <em>Your Children's Children</em> &mdash; the complete roadmap to generational wealth: 27 chapters plus the full family workbook. If these tools helped, the book is where the whole system lives.</p>
+      <a href="https://www.amazon.com/dp/B0H6FC2W39" target="_blank" rel="noopener" class="buy-cta-btn">Get the Book on Amazon &rarr;</a>
+      <div class="buy-formats">Available in Hardcover, Paperback &amp; Kindle</div>
     </section>
 
     <div class="colophon">
