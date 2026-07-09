@@ -426,3 +426,18 @@ h3 {
         width: 200px;
     }
 }
+
+/* ---- LIVE workshop card (links to the workbook) ---- */
+a.workshop-card-live{
+    text-decoration:none;
+    display:block;
+    transition:all .25s ease;
+    border-color:#D9A441;
+}
+a.workshop-card-live:hover{
+    transform:translateY(-4px);
+    box-shadow:0 8px 22px rgba(217,164,65,0.35);
+    border-color:#D9A441;
+}
+a.workshop-card-live h3{color:#D9A441;}
+a.workshop-card-live strong{color:#D9A441;}
