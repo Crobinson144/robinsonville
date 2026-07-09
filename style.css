@@ -266,27 +266,33 @@ h3 {
     display: inline-block;
     font-family: 'Lato', sans-serif;
     font-weight: 700;
-    font-size: 1rem;
-    letter-spacing: 1px;
+    font-size: 1.05rem;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     text-decoration: none;
-    padding: 0.9rem 2.2rem;
-    border: 2px solid #000000;
+    padding: 1rem 2.6rem;
+    border: 2px solid transparent;
+    border-radius: 3px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
 }
 
+/* Primary = GOLD accent (matches the book cover's gold border) — the eye-catcher */
 .btn-primary {
-    background-color: #000000;
-    color: #FFFFFF;
-    border-color: #000000;
+    background-color: #D9A441;
+    color: #1A1A1A;
+    border-color: #D9A441;
+    box-shadow: 0 4px 14px rgba(217, 164, 65, 0.35);
 }
 .btn-primary:hover {
-    background-color: #C0C0C0;
-    color: #000000;
-    border-color: #C0C0C0;
+    background-color: #C48F2E;
+    border-color: #C48F2E;
+    color: #1A1A1A;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(217, 164, 65, 0.55);
 }
 
+/* Secondary = outline, for lower-priority actions (Notify Me) */
 .btn-secondary {
     background-color: transparent;
     color: #000000;
@@ -295,6 +301,7 @@ h3 {
 .btn-secondary:hover {
     background-color: #000000;
     color: #FFFFFF;
+    transform: translateY(-2px);
 }
 
 .hero-robinsonville .btn {
