@@ -110,6 +110,47 @@
     .toolbar .tt{font-size:0.85rem;}
   }
 
+  /* Toolbar actions */
+  .tb-actions{display:flex;align-items:center;gap:0.8rem;}
+  .save-status{font-size:0.75rem;color:#9a9a9a;letter-spacing:0.5px;min-width:64px;text-align:right;transition:opacity .3s;}
+  .ghost-btn{font-family:'Lato';font-size:0.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#c0c0c0;background:none;border:1px solid #555;border-radius:3px;padding:0.5rem 0.9rem;cursor:pointer;transition:all .2s;}
+  .ghost-btn:hover{color:#fff;border-color:#c0c0c0;}
+
+  /* Tools lead */
+  .tools-lead{border-top:3px double var(--black);margin-top:1rem;}
+
+  /* Compound calculator */
+  .calc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.9rem 1.4rem;margin:0.4rem 0 1.6rem;}
+  .calc-field label{display:block;font-size:0.8rem;font-weight:700;color:#444;margin-bottom:0.2rem;}
+  .calc-field input{border:none;border-bottom:1.5px solid var(--silver);}
+  .bar-compare{margin:1.2rem 0 0.8rem;}
+  .bar-row{margin-bottom:0.9rem;}
+  .bar-label{display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:0.25rem;}
+  .bar-label span{color:#555;}
+  .bar-label b{font-family:'Lato';color:var(--black);}
+  .bar-track{background:#f0f0f0;border-radius:3px;height:26px;overflow:hidden;}
+  .bar{height:100%;border-radius:3px;transition:width .4s ease;min-width:2px;}
+  .bar-early{background:var(--gold);}
+  .bar-late{background:#b9b9b9;}
+  .calc-diff{font-size:0.95rem;color:#444;margin-top:0.6rem;background:#faf7f0;border-radius:4px;padding:0.7rem 1rem;}
+  .calc-diff strong{color:var(--gold-dark);font-size:1.05rem;}
+
+  /* Allocation */
+  .alloc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.9rem 1.4rem;margin:1.2rem 0 0.6rem;}
+  .alloc-bucket{border:1.5px solid var(--line);border-radius:5px;padding:0.8rem 1rem;display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:0.3rem;}
+  .alloc-name{grid-column:1 / -1;font-weight:700;font-size:0.9rem;color:#333;margin-bottom:0.3rem;}
+  .alloc-bucket input{width:56px;border:none;border-bottom:1.5px solid var(--silver);text-align:right;font-weight:700;}
+  .alloc-pct{color:#888;font-size:0.85rem;margin-right:0.6rem;}
+  .alloc-amt{font-family:'Lato';font-weight:700;color:var(--gold-dark);text-align:right;justify-self:end;font-size:1.05rem;}
+  .alloc-warn{color:#b03030;font-size:0.85rem;margin-top:0.4rem;display:none;}
+
+  /* Checklist */
+  ul.checklist{list-style:none;margin:1rem 0;}
+  ul.checklist li{padding:0.7rem 0;border-bottom:1px solid var(--line);}
+  ul.checklist label{display:inline-flex;align-items:center;gap:0.6rem;font-size:1rem;cursor:pointer;}
+  ul.checklist input{width:18px;height:18px;accent-color:var(--gold-dark);}
+  .chk-note{display:block;font-size:0.82rem;color:var(--muted);margin:0.2rem 0 0 1.8rem;}
+
   /* ---------- PRINT ---------- */
   @media print{
     body{background:#fff;}
@@ -120,6 +161,11 @@
     input[type=text], input[type=number]{border-bottom:1px solid #000;}
     textarea{border:1px solid #999;}
     .howto, .schedule, .examples{background:#f4f4f4 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .tools-lead{break-before:page;}
+    .bar-track{border:1px solid #999;}
+    .bar-early{background:#d9a441 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .bar-late{background:#bbb !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .calc-diff, .alloc-bucket{border:1px solid #ccc;}
     @page{margin:0.5in;}
   }
 </style>
@@ -128,7 +174,11 @@
 
   <div class="toolbar">
     <div class="tt">The Family Workbook <span>· YCC</span></div>
-    <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+    <div class="tb-actions">
+      <span id="save-status" class="save-status"></span>
+      <button class="ghost-btn" id="clear-btn" onclick="clearSaved()">Clear</button>
+      <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+    </div>
   </div>
 
   <div class="sheet">
@@ -343,6 +393,83 @@
       <p class="closer">Consistency beats intensity.</p>
     </section>
 
+    <!-- ============ INTERACTIVE TOOLS ============ -->
+    <section class="worksheet tools-lead">
+      <div class="ws-num">Interactive Tools</div>
+      <h2 class="ws-title">Daily &amp; Ongoing Tools</h2>
+      <p class="ws-purpose">The worksheets above are for annual and quarterly reviews. These three are the daily and monthly habits from the 8-Year Blueprint &mdash; use them with your child on repeat.</p>
+    </section>
+
+    <!-- TOOL: Compound Growth -->
+    <section class="worksheet tool">
+      <div class="ws-num">Tool 01</div>
+      <h2 class="ws-title">Compound Growth Projection</h2>
+      <p class="ws-purpose"><b>Purpose.</b> See what starting early is actually worth. Change the numbers and watch the gap between an early start and a late start.</p>
+
+      <div class="calc-grid">
+        <div class="calc-field"><label>Starting amount ($)</label><input type="number" id="c-start" value="1000" oninput="calcCompound()"></div>
+        <div class="calc-field"><label>Added each month ($)</label><input type="number" id="c-monthly" value="100" oninput="calcCompound()"></div>
+        <div class="calc-field"><label>Annual return (%)</label><input type="number" id="c-return" value="7" oninput="calcCompound()"></div>
+        <div class="calc-field"><label>Early start age</label><input type="number" id="c-early" value="16" oninput="calcCompound()"></div>
+        <div class="calc-field"><label>Late start age</label><input type="number" id="c-late" value="26" oninput="calcCompound()"></div>
+        <div class="calc-field"><label>Compare at age</label><input type="number" id="c-end" value="46" oninput="calcCompound()"></div>
+      </div>
+
+      <div class="bar-compare">
+        <div class="bar-row">
+          <div class="bar-label"><span id="c-early-lbl">Start at 16</span><b id="c-early-val">$0</b></div>
+          <div class="bar-track"><div class="bar bar-early" id="c-early-bar"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label"><span id="c-late-lbl">Start at 26</span><b id="c-late-val">$0</b></div>
+          <div class="bar-track"><div class="bar bar-late" id="c-late-bar"></div></div>
+        </div>
+      </div>
+      <p class="calc-diff">Starting early is worth <strong id="c-diff">$0</strong> more by the compare age &mdash; same money in, more time to compound.</p>
+    </section>
+
+    <!-- TOOL: Monthly Capital Allocation -->
+    <section class="worksheet tool">
+      <div class="ws-num">Tool 02</div>
+      <h2 class="ws-title">Monthly Capital Allocation</h2>
+      <p class="ws-purpose"><b>Purpose.</b> Teach intentional allocation. Enter the month's money and split it on purpose. The book's default is 50 / 30 / 10 / 10 &mdash; adjust the percentages by age.</p>
+
+      <label class="field-label">Money to allocate this month ($)</label>
+      <input type="number" id="a-amount" value="100" oninput="calcAllocation()" style="max-width:220px">
+
+      <div class="alloc-grid">
+        <div class="alloc-bucket"><div class="alloc-name">Save / Invest</div><input type="number" id="a-p-save" value="50" oninput="calcAllocation()"><span class="alloc-pct">%</span><div class="alloc-amt" id="a-save">$0</div></div>
+        <div class="alloc-bucket"><div class="alloc-name">Spend intentionally</div><input type="number" id="a-p-spend" value="30" oninput="calcAllocation()"><span class="alloc-pct">%</span><div class="alloc-amt" id="a-spend">$0</div></div>
+        <div class="alloc-bucket"><div class="alloc-name">Skill development</div><input type="number" id="a-p-skill" value="10" oninput="calcAllocation()"><span class="alloc-pct">%</span><div class="alloc-amt" id="a-skill">$0</div></div>
+        <div class="alloc-bucket"><div class="alloc-name">Give</div><input type="number" id="a-p-give" value="10" oninput="calcAllocation()"><span class="alloc-pct">%</span><div class="alloc-amt" id="a-give">$0</div></div>
+      </div>
+      <p class="alloc-warn" id="a-sum-warn"></p>
+    </section>
+
+    <!-- TOOL: Daily Discipline Checklist -->
+    <section class="worksheet tool">
+      <div class="ws-num">Tool 03</div>
+      <h2 class="ws-title">Daily Discipline Checklist</h2>
+      <p class="ws-purpose"><b>Purpose.</b> Ages 10&ndash;18. Trajectory comes from consistency, not intensity. Print one per day, or check it off here.</p>
+      <label class="field-label" style="max-width:220px">Date</label>
+      <input type="text" placeholder="__ / __ / ____" style="max-width:220px">
+
+      <ul class="checklist">
+        <li><label><input type="checkbox"> <b>Focus Block (30&ndash;60 min)</b></label><span class="chk-note">Reading non-fiction or skill material &middot; no devices &middot; no multitasking</span></li>
+        <li><label><input type="checkbox"> <b>Skill Development Block (30&ndash;60 min)</b></label><span class="chk-note">Coding, writing, speaking, design, finance, business &middot; practice over consumption</span></li>
+        <li><label><input type="checkbox"> <b>Physical Training (20&ndash;45 min)</b></label><span class="chk-note">Movement builds discipline and resilience</span></li>
+        <li><label><input type="checkbox"> <b>Reflection (5&ndash;10 min)</b></label><span class="chk-note">Answer the three questions below</span></li>
+      </ul>
+
+      <label class="field-label">What did I learn today?</label>
+      <textarea rows="1"></textarea>
+      <label class="field-label">What distracted me?</label>
+      <textarea rows="1"></textarea>
+      <label class="field-label">What could I improve tomorrow?</label>
+      <textarea rows="1"></textarea>
+      <p class="kicker">Consistency at 14 creates advantage at 24.</p>
+    </section>
+
     <div class="colophon">
       From <b>Your Children's Children</b> by Chinua Eric Robinson · Robinsonville Financial Network™<br>
       © 2026 · All rights reserved
@@ -381,8 +508,97 @@
     return tr;
   }
   function addTrackerRow(){ document.getElementById('tracker-body').appendChild(trackerRow()); }
-  // seed 4 blank rows
-  for(var r=0;r<4;r++){ addTrackerRow(); }
+
+  function money(v){ return '$'+Math.round(v||0).toLocaleString('en-US'); }
+
+  // Compound growth (Tool 01)
+  function calcCompound(){
+    var P=+document.getElementById('c-start').value||0;
+    var PMT=+document.getElementById('c-monthly').value||0;
+    var annual=+document.getElementById('c-return').value||0;
+    var eAge=+document.getElementById('c-early').value||0;
+    var lAge=+document.getElementById('c-late').value||0;
+    var end=+document.getElementById('c-end').value||0;
+    var r=annual/100/12;
+    function fv(startAge){
+      var n=Math.max(0,(end-startAge)*12);
+      if(r===0) return P+PMT*n;
+      return P*Math.pow(1+r,n)+PMT*((Math.pow(1+r,n)-1)/r);
+    }
+    var early=fv(eAge), late=fv(lAge);
+    document.getElementById('c-early-val').textContent=money(early);
+    document.getElementById('c-late-val').textContent=money(late);
+    document.getElementById('c-diff').textContent=money(Math.max(0,early-late));
+    document.getElementById('c-early-lbl').textContent='Start at '+eAge;
+    document.getElementById('c-late-lbl').textContent='Start at '+lAge;
+    var mx=Math.max(early,late,1);
+    document.getElementById('c-early-bar').style.width=(early/mx*100)+'%';
+    document.getElementById('c-late-bar').style.width=(late/mx*100)+'%';
+  }
+
+  // Monthly allocation (Tool 02)
+  function calcAllocation(){
+    var amt=+document.getElementById('a-amount').value||0;
+    var ps=+document.getElementById('a-p-save').value||0;
+    var pp=+document.getElementById('a-p-spend').value||0;
+    var pk=+document.getElementById('a-p-skill').value||0;
+    var pg=+document.getElementById('a-p-give').value||0;
+    document.getElementById('a-save').textContent=money(amt*ps/100);
+    document.getElementById('a-spend').textContent=money(amt*pp/100);
+    document.getElementById('a-skill').textContent=money(amt*pk/100);
+    document.getElementById('a-give').textContent=money(amt*pg/100);
+    var sum=ps+pp+pk+pg, w=document.getElementById('a-sum-warn');
+    if(sum!==100){ w.textContent='Percentages total '+sum+'% — adjust to 100%.'; w.style.display='block'; }
+    else { w.style.display='none'; }
+  }
+
+  // ---- Autosave / resume (feature-detected; no-ops where storage is blocked) ----
+  var SKEY='ycc_workbook_v2';
+  var STORAGE_OK=(function(){try{localStorage.setItem('__t','1');localStorage.removeItem('__t');return true;}catch(e){return false;}})();
+  function allFields(){ return document.querySelectorAll('.sheet input, .sheet textarea'); }
+  var saveTimer;
+  function saveState(){
+    if(!STORAGE_OK) return;
+    clearTimeout(saveTimer);
+    saveTimer=setTimeout(function(){
+      try{
+        var data={tracker:document.querySelectorAll('#tracker-body tr').length,fields:[]};
+        allFields().forEach(function(f){ data.fields.push(f.type==='checkbox'?(f.checked?1:0):f.value); });
+        localStorage.setItem(SKEY,JSON.stringify(data));
+        flashSaved();
+      }catch(e){}
+    },350);
+  }
+  function loadState(){
+    if(!STORAGE_OK) return;
+    try{
+      var raw=localStorage.getItem(SKEY); if(!raw) return;
+      var data=JSON.parse(raw);
+      var body=document.getElementById('tracker-body'); body.innerHTML='';
+      var tc=data.tracker||4; for(var i=0;i<tc;i++) addTrackerRow();
+      var fields=allFields();
+      (data.fields||[]).forEach(function(v,idx){
+        var f=fields[idx]; if(!f) return;
+        if(f.type==='checkbox') f.checked=(v==1); else f.value=v;
+      });
+    }catch(e){}
+  }
+  function clearSaved(){ if(STORAGE_OK){try{localStorage.removeItem(SKEY);}catch(e){}} location.reload(); }
+  function flashSaved(){
+    var s=document.getElementById('save-status'); if(!s) return;
+    s.textContent='Saved'; s.style.opacity='1';
+    clearTimeout(window._sf); window._sf=setTimeout(function(){ s.textContent='Autosaves'; s.style.opacity='0.55'; },1100);
+  }
+
+  // ---- Init ----
+  for(var r=0;r<4;r++){ addTrackerRow(); }   // default rows (replaced by loadState if saved)
+  loadState();
+  document.querySelectorAll('textarea').forEach(grow);
+  calcNetWorth(); calcCompound(); calcAllocation();
+  if(!STORAGE_OK){ var cb=document.getElementById('clear-btn'); if(cb) cb.style.display='none'; }
+  else { var s0=document.getElementById('save-status'); if(s0){ s0.textContent='Autosaves'; s0.style.opacity='0.55'; } }
+  document.addEventListener('input', saveState);
+  document.addEventListener('change', saveState);
 </script>
 </body>
 </html>
