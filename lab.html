@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Junior Architect Lab — Foundations of Money</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#f4f1ea; --bg0:#080a12; --bg1:#0f1420; --panel:#0c101b;
+    --gold:#d9a441; --gold-2:#f0c667; --gold-dark:#a9781f;
+    --silver:#8892a4; --line:rgba(217,164,65,.25); --shadow:rgba(0,0,0,.55);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    font-family:'Lato',sans-serif;color:var(--ink);
+    background:radial-gradient(120% 120% at 50% 0%,#141b2b 0%,#0a0d16 55%,#05070d 100%);
+    overflow:hidden;
+  }
+  .stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;}
+
+  /* Ambient particles */
+  .dust{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:1;}
+  .dust span{position:absolute;bottom:-10px;width:3px;height:3px;border-radius:50%;
+    background:rgba(217,164,65,.5);animation:rise linear infinite;opacity:0;}
+  @keyframes rise{0%{transform:translateY(0);opacity:0;}10%{opacity:.6;}90%{opacity:.4;}100%{transform:translateY(-105vh);opacity:0;}}
+
+  /* ---------------- TITLE ---------------- */
+  #title{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;transition:opacity .8s ease;}
+  #title .crest{width:64px;height:64px;margin-bottom:1.4rem;opacity:.9;}
+  #title .eyebrow{font-size:.72rem;letter-spacing:5px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:1rem;}
+  #title h1{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(2.4rem,7vw,5rem);line-height:1;letter-spacing:-.5px;
+    background:linear-gradient(180deg,#fff 0%,var(--gold-2) 60%,var(--gold-dark) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  #title .chapter{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.1rem,3vw,1.6rem);color:var(--silver);margin-top:.6rem;}
+  #title .sub{max-width:36ch;color:#b9c0cf;font-size:.98rem;margin:1.6rem auto 2.4rem;line-height:1.6;}
+  .btn-begin{font-family:'Lato';font-weight:700;font-size:1rem;letter-spacing:2px;text-transform:uppercase;color:#1a1a1a;
+    background:linear-gradient(180deg,var(--gold-2),var(--gold-dark));border:none;border-radius:6px;padding:1.1rem 3rem;cursor:pointer;
+    box-shadow:0 8px 30px rgba(217,164,65,.4);transition:transform .2s,box-shadow .2s;}
+  .btn-begin:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(217,164,65,.6);}
+  .fadeup{opacity:0;transform:translateY(18px);animation:fadeup .9s forwards;}
+  .fadeup.d1{animation-delay:.15s;}.fadeup.d2{animation-delay:.4s;}.fadeup.d3{animation-delay:.7s;}.fadeup.d4{animation-delay:1s;}
+  @keyframes fadeup{to{opacity:1;transform:translateY(0);}}
+
+  /* ---------------- SCENE ---------------- */
+  #scene{position:fixed;inset:0;z-index:10;opacity:0;pointer-events:none;transition:opacity .6s ease;}
+  #scene.on{opacity:1;pointer-events:auto;}
+
+  /* Backdrop (placeholder for generated scene art) */
+  .backdrop{position:absolute;inset:0;transition:opacity 1s ease, transform 8s ease;transform:scale(1.05);}
+  .backdrop.kitchen{background:
+    radial-gradient(80% 60% at 50% 30%,rgba(217,164,65,.10),transparent 60%),
+    linear-gradient(180deg,#12151f 0%,#0b0e16 100%);}
+  .art-note{position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:30;
+    font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:rgba(217,164,65,.55);
+    border:1px dashed rgba(217,164,65,.35);border-radius:20px;padding:.3rem .9rem;background:rgba(8,10,18,.6);}
+
+  /* Character stage (placeholder portraits for generated art) */
+  .cast{position:absolute;left:0;right:0;bottom:190px;display:flex;justify-content:center;gap:6vw;z-index:12;padding:0 5vw;}
+  .char{width:clamp(120px,20vw,210px);aspect-ratio:3/4;position:relative;opacity:.28;filter:grayscale(.4);transition:opacity .5s ease,transform .5s ease,filter .5s ease;transform:translateY(10px);}
+  .char.active{opacity:1;filter:none;transform:translateY(0);}
+  .char .frame{position:absolute;inset:0;border-radius:12px;overflow:hidden;
+    background:linear-gradient(180deg,#1a2130,#0d111b);border:1px solid var(--line);
+    box-shadow:0 20px 50px var(--shadow);display:flex;align-items:flex-end;justify-content:center;}
+  /* placeholder silhouette */
+  .silho{width:76%;height:88%;background:linear-gradient(180deg,#2a3547,#1a2130);
+    -webkit-mask:radial-gradient(circle at 50% 26%,#000 18%,transparent 19%) ,linear-gradient(#000,#000);
+    -webkit-mask-composite:source-over;border-radius:60px 60px 0 0;position:relative;}
+  .silho::before{content:"";position:absolute;top:8%;left:50%;transform:translateX(-50%);width:34%;aspect-ratio:1;border-radius:50%;background:linear-gradient(180deg,#2f3b50,#20293a);}
+  .char .tag{position:absolute;bottom:-26px;left:50%;transform:translateX(-50%);font-size:.66rem;letter-spacing:2px;text-transform:uppercase;color:var(--silver);}
+  .char .ph{position:absolute;top:8px;right:8px;font-size:.5rem;letter-spacing:1px;color:rgba(217,164,65,.6);border:1px dashed rgba(217,164,65,.4);border-radius:10px;padding:2px 6px;}
+
+  /* Dialogue */
+  .dialogue{position:absolute;left:0;right:0;bottom:0;z-index:20;padding:0 4vw 3vh;display:flex;justify-content:center;}
+  .box{width:min(760px,92vw);background:linear-gradient(180deg,rgba(14,18,28,.94),rgba(9,12,20,.97));
+    border:1px solid var(--line);border-radius:14px;padding:1.4rem 1.8rem 1.5rem;position:relative;
+    box-shadow:0 24px 60px var(--shadow);backdrop-filter:blur(6px);}
+  .box::before{content:"";position:absolute;top:0;left:1.6rem;right:1.6rem;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.7;}
+  .speaker{font-family:'Playfair Display',serif;font-weight:700;font-size:1.05rem;color:var(--gold-2);letter-spacing:.5px;margin-bottom:.4rem;}
+  .line{font-size:clamp(1.02rem,2.4vw,1.22rem);line-height:1.6;color:var(--ink);min-height:2.4em;}
+  .caret{display:inline-block;width:.5ch;color:var(--gold);animation:blink 1s steps(1) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  .advance{position:absolute;right:1.4rem;bottom:1rem;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--silver);opacity:0;transition:opacity .3s;}
+  .advance.show{opacity:.75;animation:nudge 1.4s ease-in-out infinite;}
+  @keyframes nudge{0%,100%{transform:translateX(0);}50%{transform:translateX(4px);}}
+
+  /* Progress */
+  .progress{position:absolute;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,.06);z-index:25;}
+  .progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold-dark),var(--gold-2));transition:width .5s ease;}
+  .skip{position:absolute;top:14px;right:16px;z-index:30;font-size:.66rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--silver);background:none;border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:.35rem .8rem;cursor:pointer;opacity:.6;transition:opacity .2s;}
+  .skip:hover{opacity:1;}
+
+  /* ---------------- DEMO STAGE ---------------- */
+  .demo-wrap{position:absolute;left:0;right:0;top:8vh;bottom:210px;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 4vw;opacity:0;transform:scale(.96);transition:opacity .5s ease,transform .5s ease;pointer-events:none;}
+  .demo-wrap.on{opacity:1;transform:scale(1);}
+  .demo-title{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1rem,2.6vw,1.4rem);color:var(--gold-2);margin-bottom:1.4rem;text-align:center;}
+  .demo-stage{width:min(720px,92vw);height:min(340px,42vh);position:relative;}
+
+  /* generic demo bits */
+  .coin{width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--gold-2),var(--gold-dark));
+    box-shadow:0 6px 18px rgba(217,164,65,.45),inset 0 -3px 6px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;
+    font-family:'Playfair Display',serif;font-weight:800;color:#5a3d0a;font-size:1.4rem;position:absolute;}
+  .card{position:absolute;background:linear-gradient(180deg,#1b2331,#10151f);border:1px solid var(--line);border-radius:10px;
+    padding:.7rem .5rem;width:104px;text-align:center;box-shadow:0 12px 30px var(--shadow);}
+  .card .ic{font-size:1.7rem;line-height:1;}
+  .card .lb{font-size:.72rem;color:#c7cede;margin-top:.35rem;letter-spacing:.3px;}
+  .card .rk{font-size:.6rem;letter-spacing:1px;text-transform:uppercase;margin-top:.3rem;}
+  .arrow{position:absolute;height:2px;background:linear-gradient(90deg,transparent,var(--gold),var(--gold));transform-origin:left center;}
+  .arrow::after{content:"";position:absolute;right:-1px;top:-4px;border:5px solid transparent;border-left-color:var(--gold);}
+  .fade-in{animation:dfin .5s forwards;}@keyframes dfin{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .flash-x{position:absolute;color:#e2685f;font-weight:800;font-size:2rem;opacity:0;}
+  .grow-pop{animation:growpop .8s ease forwards;}@keyframes growpop{0%{transform:scale(1);}60%{transform:scale(1.35);}100%{transform:scale(1.2);}}
+  .spark{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--gold-2);opacity:0;}
+
+  .demo-caption{margin-top:1.4rem;max-width:44ch;text-align:center;color:#b9c0cf;font-size:.96rem;line-height:1.55;min-height:2.6em;}
+  .demo-continue{margin-top:1.2rem;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);opacity:0;transition:opacity .4s;cursor:pointer;border:1px solid var(--line);border-radius:20px;padding:.5rem 1.2rem;}
+  .demo-continue.show{opacity:1;animation:pulseb 1.6s ease-in-out infinite;}
+  @keyframes pulseb{0%,100%{box-shadow:0 0 0 0 rgba(217,164,65,.0);}50%{box-shadow:0 0 0 4px rgba(217,164,65,.12);}}
+
+  /* ---------------- END ---------------- */
+  #end{position:fixed;inset:0;z-index:45;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;overflow-y:auto;}
+  #end .done{font-size:.72rem;letter-spacing:4px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:.8rem;}
+  #end h2{font-family:'Playfair Display',serif;font-weight:800;font-size:clamp(1.8rem,5vw,3rem);line-height:1.05;margin-bottom:1.6rem;
+    background:linear-gradient(180deg,#fff,var(--gold-2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .recap{width:min(560px,92vw);text-align:left;margin:0 auto 2rem;}
+  .recap li{list-style:none;display:flex;gap:.9rem;align-items:flex-start;padding:.7rem 0;border-bottom:1px solid rgba(255,255,255,.07);}
+  .recap .n{font-family:'Playfair Display',serif;color:var(--gold);font-weight:700;font-size:1.1rem;flex:0 0 auto;width:1.4em;}
+  .recap .t{color:#cfd5e2;font-size:.95rem;line-height:1.5;}
+  .recap .t b{color:#fff;}
+  .next-card{width:min(560px,92vw);background:linear-gradient(135deg,#151a26,#0c101a);border:1px solid var(--line);border-radius:14px;padding:1.6rem;margin:0 auto;}
+  .next-card .nx{font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem;}
+  .next-card .ph2{font-family:'Playfair Display',serif;font-size:1.4rem;color:#fff;margin-bottom:.5rem;}
+  .next-card p{color:#aab2c2;font-size:.92rem;line-height:1.55;}
+  .soon{margin-top:1.1rem;display:inline-block;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--silver);border:1px dashed rgba(255,255,255,.18);border-radius:20px;padding:.5rem 1.1rem;}
+  .replay{margin-top:1.6rem;background:none;border:1px solid var(--line);color:var(--gold);border-radius:6px;padding:.7rem 1.6rem;font-family:'Lato';font-weight:700;letter-spacing:1.5px;text-transform:uppercase;font-size:.75rem;cursor:pointer;transition:all .2s;}
+  .replay:hover{background:rgba(217,164,65,.1);}
+
+  @media (max-width:640px){
+    .cast{bottom:210px;gap:8vw;}
+    .char .tag{bottom:-22px;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="dust" id="dust"></div>
+
+  <!-- TITLE -->
+  <div id="title">
+    <svg class="crest fadeup" viewBox="0 0 64 64" fill="none"><rect x="8" y="6" width="48" height="52" rx="6" stroke="#d9a441" stroke-width="2"/><path d="M20 40 L32 18 L44 40" stroke="#d9a441" stroke-width="2.5" fill="none"/><circle cx="32" cy="44" r="4" fill="#d9a441"/></svg>
+    <div class="eyebrow fadeup d1">The Junior Architect Lab</div>
+    <h1 class="fadeup d1">Foundations<br>of Money</h1>
+    <div class="chapter fadeup d2">Chapter One</div>
+    <p class="sub fadeup d3">Before you can build wealth, you have to understand the tool. A conversation with your parents — the one most people never get.</p>
+    <button class="btn-begin fadeup d4" onclick="startGame()">Begin</button>
+  </div>
+
+  <!-- SCENE -->
+  <div id="scene">
+    <div class="progress"><i id="pbar"></i></div>
+    <button class="skip" onclick="skipToEnd()" title="Skip to summary">Skip ▸</button>
+
+    <div class="backdrop kitchen" id="backdrop"></div>
+    <div class="art-note">Scene art placeholder — generated illustration drops in here</div>
+
+    <div class="cast" id="cast">
+      <div class="char" data-who="mom"><div class="frame"><div class="silho"></div></div><span class="ph">art</span><span class="tag">Mom</span></div>
+      <div class="char" data-who="you"><div class="frame"><div class="silho"></div></div><span class="ph">art</span><span class="tag">You</span></div>
+      <div class="char" data-who="dad"><div class="frame"><div class="silho"></div></div><span class="ph">art</span><span class="tag">Dad</span></div>
+    </div>
+
+    <!-- demo -->
+    <div class="demo-wrap" id="demoWrap">
+      <div class="demo-title" id="demoTitle"></div>
+      <div class="demo-stage" id="demoStage"></div>
+      <div class="demo-caption" id="demoCaption"></div>
+      <div class="demo-continue" id="demoContinue" onclick="advance()">Continue ▸</div>
+    </div>
+
+    <!-- dialogue -->
+    <div class="dialogue" id="dialogue">
+      <div class="box">
+        <div class="speaker" id="speaker"></div>
+        <div class="line" id="line"></div>
+        <div class="advance" id="advanceHint">Tap ▸</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- END -->
+  <div id="end">
+    <div class="done">Chapter One Complete</div>
+    <h2>You now understand<br>more than most adults.</h2>
+    <ul class="recap" id="recapList"></ul>
+    <div class="next-card">
+      <div class="nx">Next Chapter</div>
+      <div class="ph2">Your First Allowance</div>
+      <p>You're eight years old. Real money, real choices — and every one of them starts building the person you'll become. The simulation begins.</p>
+      <span class="soon">Coming soon</span>
+    </div>
+    <button class="replay" onclick="location.reload()">Replay Chapter One</button>
+  </div>
+
+<script>
+/* ============================================================
+   PORTABLE CONTENT  (script + sequence — survives a platform change)
+   Edit the writing here; the engine below renders it.
+   ============================================================ */
+const CONTENT = {
+  beats: [
+    {t:'say', who:'mom', name:'Mom', text:"Come sit with us. You're old enough now to learn something most grown-ups never figured out."},
+    {t:'say', who:'you', name:'You', text:"Learn what?"},
+    {t:'say', who:'dad', name:'Dad', text:"Money. What it actually is — and, just as important, what it isn't."},
+
+    {t:'say', who:'dad', name:'Dad', text:"A long time ago, there was no money. People just traded what they had. A chicken for a bag of rice."},
+    {t:'demo', id:'barter', title:'The problem money solved',
+      caption:"Direct trade only works if both people want what the other has. Money is something everyone accepts — so it can be traded for anything."},
+    {t:'say', who:'dad', name:'Dad', text:"So money is really just something we all agree is worth something. That shared agreement is the whole trick. Money is trust."},
+
+    {t:'say', who:'you', name:'You', text:"Then money can buy anything?"},
+    {t:'say', who:'mom', name:'Mom', text:"No. And forgetting that is what quietly ruins people."},
+    {t:'demo', id:'cantbuy', title:'What money cannot buy',
+      caption:"Money buys the thing — but never the deeper thing behind it. It buys options, not outcomes."},
+    {t:'say', who:'mom', name:'Mom', text:"Money buys you options. What you choose to do with those options — that part is everything."},
+
+    {t:'say', who:'you', name:'You', text:"Is money just the cash in your wallet?"},
+    {t:'say', who:'dad', name:'Dad', text:"Cash is one kind. There are others — and each one carries a different risk."},
+    {t:'demo', id:'types', title:'The kinds of money',
+      caption:"Cash you can hold, but it slowly loses value. Digital is the same money, electronic. Crypto can climb fast — and fall just as fast."},
+    {t:'say', who:'dad', name:'Dad', text:"Knowing the risk in each kind is how you keep what you build. Most people never learn that part."},
+
+    {t:'say', who:'mom', name:'Mom', text:"Now, the most important thing we'll teach you today. Money never sits still. It's always turning into something else."},
+    {t:'demo', id:'convert', title:'What money turns into',
+      caption:"Spend it, and it becomes something that fades to nothing. Invest it, and it becomes an asset that grows — and makes more."},
+    {t:'say', who:'mom', name:'Mom', text:"A wealthy family isn't the one that earns the most. It's the one that keeps turning money into things that grow — again and again, across generations."},
+    {t:'say', who:'you', name:'You', text:"So it's not about how much you make..."},
+    {t:'say', who:'dad', name:'Dad', text:"It's about what you turn it into. You already understand more than most adults do."},
+
+    {t:'say', who:'mom', name:'Mom', text:"You're eight now. You know what that means. It's time for your first allowance."},
+    {t:'end'}
+  ],
+  recap:[
+    "<b>Money is trust</b> — a tool we all agree has value, so it can be traded for anything.",
+    "<b>Money buys options, not outcomes</b> — the thing, never the deeper thing behind it.",
+    "<b>Every kind of money carries risk</b> — cash, digital, and crypto each behave differently.",
+    "<b>Money is always becoming something else</b> — spend it and it fades; invest it and it grows."
+  ]
+};
+
+/* ============================================================
+   ENGINE  (web rendering — replaced if you ever change platform)
+   ============================================================ */
+var idx=0, typing=false, typeTimer=null, curText='';
+var beats=CONTENT.beats;
+
+// ambient dust
+(function(){var d=document.getElementById('dust');for(var i=0;i<26;i++){var s=document.createElement('span');var dur=8+Math.random()*10;s.style.left=(Math.random()*100)+'%';s.style.animationDuration=dur+'s';s.style.animationDelay=(-Math.random()*dur)+'s';var sc=.5+Math.random()*1.5;s.style.width=s.style.height=(3*sc)+'px';d.appendChild(s);}})();
+
+function startGame(){
+  var t=document.getElementById('title');
+  t.style.opacity='0';setTimeout(function(){t.style.display='none';},800);
+  document.getElementById('scene').classList.add('on');
+  idx=0;renderBeat();
+  document.getElementById('scene').addEventListener('click',onSceneClick);
+}
+
+function onSceneClick(e){
+  if(e.target.closest('.skip')||e.target.closest('.demo-continue'))return;
+  var b=beats[idx];
+  if(b && b.t==='demo')return;            // demos advance via their own button
+  if(typing){ finishTyping(); return; }
+  advance();
+}
+
+function setCast(who){
+  document.querySelectorAll('.char').forEach(function(c){
+    c.classList.toggle('active', c.getAttribute('data-who')===who);
+  });
+}
+function setProgress(){document.getElementById('pbar').style.width=Math.round((idx/(beats.length-1))*100)+'%';}
+
+function renderBeat(){
+  setProgress();
+  var b=beats[idx];
+  if(!b){return;}
+  if(b.t==='end'){ showEnd(); return; }
+
+  if(b.t==='say'){
+    document.getElementById('demoWrap').classList.remove('on');
+    document.getElementById('dialogue').style.display='flex';
+    setCast(b.who);
+    document.getElementById('speaker').textContent=b.name;
+    typeLine(b.text);
+  }
+  else if(b.t==='demo'){
+    document.getElementById('dialogue').style.display='none';
+    var dw=document.getElementById('demoWrap');
+    document.getElementById('demoTitle').textContent=b.title;
+    document.getElementById('demoCaption').textContent='';
+    document.getElementById('demoContinue').classList.remove('show');
+    dw.classList.add('on');
+    runDemo(b.id, b.caption);
+  }
+}
+
+function typeLine(txt){
+  curText=txt;typing=true;
+  var el=document.getElementById('line');
+  document.getElementById('advanceHint').classList.remove('show');
+  el.innerHTML='';var i=0;
+  clearInterval(typeTimer);
+  typeTimer=setInterval(function(){
+    if(i<=txt.length){el.innerHTML=txt.slice(0,i)+'<span class="caret">▍</span>';i++;}
+    else{finishTyping();}
+  },18);
+}
+function finishTyping(){
+  clearInterval(typeTimer);typing=false;
+  document.getElementById('line').textContent=curText;
+  document.getElementById('advanceHint').classList.add('show');
+}
+function advance(){
+  if(idx<beats.length-1){idx++;renderBeat();}
+}
+function skipToEnd(){ showEnd(); }
+
+function showEnd(){
+  document.getElementById('scene').classList.remove('on');
+  var e=document.getElementById('end');
+  var ul=document.getElementById('recapList');ul.innerHTML='';
+  CONTENT.recap.forEach(function(r,i){
+    var li=document.createElement('li');
+    li.innerHTML='<span class="n">'+(i+1)+'</span><span class="t">'+r+'</span>';
+    ul.appendChild(li);
+  });
+  setTimeout(function(){e.style.display='flex';},400);
+}
+
+/* ---------------- DEMOS (animated teaching beats) ---------------- */
+function el(cls,html,style){var d=document.createElement('div');d.className=cls;if(html!=null)d.innerHTML=html;if(style)d.style.cssText=style;return d;}
+function stage(){var s=document.getElementById('demoStage');s.innerHTML='';return s;}
+function caption(txt){setTimeout(function(){document.getElementById('demoCaption').textContent=txt;},250);}
+function doneDemo(){setTimeout(function(){document.getElementById('demoContinue').classList.add('show');},400);}
+function T(fn,ms){setTimeout(fn,ms);}
+
+function runDemo(id,cap){
+  if(id==='barter')demoBarter(cap);
+  else if(id==='cantbuy')demoCantBuy(cap);
+  else if(id==='types')demoTypes(cap);
+  else if(id==='convert')demoConvert(cap);
+}
+
+/* Demo 1 — barter breaks, money fixes it */
+function demoBarter(cap){
+  var s=stage();
+  var chicken=el('card','<div class="ic">🐔</div><div class="lb">Chicken</div>','left:6%;top:38%;');
+  var rice=el('card','<div class="ic">🌾</div><div class="lb">Rice</div>','right:6%;top:38%;');
+  s.appendChild(chicken);s.appendChild(rice);
+  chicken.classList.add('fade-in');rice.classList.add('fade-in');
+  var ar=el('arrow',null,'left:20%;top:46%;width:0;');s.appendChild(ar);
+  T(function(){ar.style.transition='width .6s ease';ar.style.width='58%';},500);
+  // mismatch
+  T(function(){
+    var x=el('flash-x','✕','left:47%;top:20%;');s.appendChild(x);
+    x.style.transition='opacity .4s, transform .4s';T(function(){x.style.opacity='1';x.style.transform='scale(1.2)';},30);
+    ar.style.opacity='.25';
+    document.getElementById('demoCaption').textContent="But what if the rice farmer doesn't want a chicken? The trade collapses.";
+  },1500);
+  // money solves
+  T(function(){
+    s.querySelectorAll('.flash-x').forEach(function(n){n.remove();});
+    var coin=el('coin','$','left:calc(50% - 28px);top:8%;transform:scale(.4);opacity:0;');s.appendChild(coin);
+    coin.style.transition='all .6s ease';T(function(){coin.style.opacity='1';coin.style.transform='scale(1)';},40);
+    ar.style.opacity='1';ar.style.background='linear-gradient(90deg,transparent,var(--gold),var(--gold))';
+    caption(cap);
+  },3200);
+  doneDemo();
+  setTimeout(doneDemo,4200);
+}
+
+/* Demo 2 — money buys the thing, not the deeper thing */
+function demoCantBuy(cap){
+  var s=stage();
+  var pairs=[['🛏️','Bed','Sleep'],['🩺','Doctor','Health'],['🏠','House','Home']];
+  var coin=el('coin','$','left:calc(50% - 28px);top:6%;');s.appendChild(coin);coin.classList.add('fade-in');
+  pairs.forEach(function(p,i){
+    var y=(30+i*26)+'%';
+    var buy=el('card','<div class="ic">'+p[0]+'</div><div class="lb">'+p[1]+'</div><div class="rk" style="color:#7fce9b">Bought ✓</div>','left:14%;top:'+y+';opacity:0;transform:translateX(-20px);');
+    var cant=el('card','<div class="ic" style="filter:grayscale(1);opacity:.5">✨</div><div class="lb" style="opacity:.6">'+p[2]+'</div><div class="rk" style="color:#e2685f">Can\'t buy ✕</div>','right:14%;top:'+y+';opacity:0;transform:translateX(20px);');
+    s.appendChild(buy);s.appendChild(cant);
+    T(function(){buy.style.transition='all .5s ease';buy.style.opacity='1';buy.style.transform='translateX(0)';},700+i*500);
+    T(function(){cant.style.transition='all .5s ease';cant.style.opacity='1';cant.style.transform='translateX(0)';},1000+i*500);
+  });
+  caption(cap);doneDemo();setTimeout(doneDemo,3000);
+}
+
+/* Demo 3 — types of money with risk */
+function demoTypes(cap){
+  var s=stage();
+  var types=[
+    {ic:'💵',lb:'Cash',rk:'Loses value slowly',col:'#d9c07f'},
+    {ic:'🏦',lb:'Digital',rk:'Same money, electronic',col:'#9fb8e0'},
+    {ic:'📈',lb:'Crypto',rk:'High risk · high swing',col:'#e2685f'}
+  ];
+  types.forEach(function(t,i){
+    var c=el('card','<div class="ic">'+t.ic+'</div><div class="lb">'+t.lb+'</div><div class="rk" style="color:'+t.col+'">'+t.rk+'</div>',
+      'left:calc('+(16+i*30)+'% );top:26%;width:120px;opacity:0;transform:translateY(20px);');
+    s.appendChild(c);
+    T(function(){c.style.transition='all .5s ease';c.style.opacity='1';c.style.transform='translateY(0)';},500+i*450);
+  });
+  // crypto volatility line
+  T(function(){
+    var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','0 0 200 60');svg.style.cssText='position:absolute;right:8%;top:66%;width:170px;height:56px;';
+    var path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d','M0 40 L30 30 L55 45 L80 12 L110 50 L140 8 L170 44 L200 20');
+    path.setAttribute('fill','none');path.setAttribute('stroke','#e2685f');path.setAttribute('stroke-width','2.5');
+    path.setAttribute('stroke-linejoin','round');path.setAttribute('stroke-linecap','round');
+    var len=path.getTotalLength?400:400;path.style.strokeDasharray=len;path.style.strokeDashoffset=len;
+    path.style.transition='stroke-dashoffset 1.6s ease';svg.appendChild(path);s.appendChild(svg);
+    T(function(){path.style.strokeDashoffset='0';},60);
+  },1900);
+  caption(cap);doneDemo();setTimeout(doneDemo,4000);
+}
+
+/* Demo 4 — spend fades vs invest grows (the money shot) */
+function demoConvert(cap){
+  var s=stage();
+  var coin=el('coin','$','left:calc(50% - 28px);top:4%;');s.appendChild(coin);coin.classList.add('fade-in');
+  // labels
+  var spendL=el('demo-title','SPEND','position:absolute;left:16%;top:26%;font-size:.8rem;letter-spacing:2px;color:#e2685f;opacity:0;');
+  var investL=el('demo-title','INVEST','position:absolute;right:16%;top:26%;font-size:.8rem;letter-spacing:2px;color:#7fce9b;opacity:0;');
+  s.appendChild(spendL);s.appendChild(investL);
+  T(function(){spendL.style.transition=investL.style.transition='opacity .4s';spendL.style.opacity='1';investL.style.opacity='1';},500);
+  // spend path -> sneakers -> fades
+  T(function(){
+    var sn=el('card','<div class="ic">👟</div><div class="lb">Sneakers</div>','left:12%;top:40%;opacity:0;transform:scale(.8);');
+    s.appendChild(sn);sn.style.transition='all .5s ease';T(function(){sn.style.opacity='1';sn.style.transform='scale(1)';},40);
+    T(function(){sn.style.transition='all 1.2s ease';sn.style.opacity='0';sn.style.transform='scale(.5) translateY(30px)';
+      var g=el('demo-title','gone','position:absolute;left:15%;top:62%;font-size:.75rem;color:#888;opacity:0;');s.appendChild(g);
+      T(function(){g.style.transition='opacity .5s';g.style.opacity='.8';},400);},1400);
+  },1000);
+  // invest path -> asset -> grows + spawns coins
+  T(function(){
+    var as=el('card','<div class="ic">🏢</div><div class="lb">Asset</div>','right:12%;top:40%;opacity:0;transform:scale(.8);');
+    s.appendChild(as);as.style.transition='all .5s ease';T(function(){as.style.opacity='1';as.style.transform='scale(1)';},40);
+    T(function(){as.classList.add('grow-pop');
+      // spawn little coins rising
+      for(var k=0;k<4;k++){(function(k){T(function(){
+        var mc=el('coin','$','right:'+(18+k*4)+'%;top:44%;width:26px;height:26px;font-size:.75rem;opacity:0;');
+        s.appendChild(mc);mc.style.transition='all 1s ease';
+        T(function(){mc.style.opacity='1';mc.style.top=(18-k*3)+'%';mc.style.right=(10+k*10)+'%';},30);
+      },k*220);})(k);}
+      var g=el('demo-title','grows','position:absolute;right:16%;top:66%;font-size:.75rem;color:#7fce9b;opacity:0;');s.appendChild(g);
+      T(function(){g.style.transition='opacity .5s';g.style.opacity='1';},500);
+    },1500);
+  },1200);
+  caption(cap);setTimeout(doneDemo,4600);
+}
+</script>
+</body>
+</html>
