@@ -76,6 +76,9 @@
   .add-row{font-family:'Lato';font-weight:700;font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;color:var(--gold-dark);background:none;border:1.5px dashed var(--silver);border-radius:4px;padding:0.5rem 1rem;cursor:pointer;margin-top:0.7rem;transition:all .2s;}
   .add-row:hover{border-color:var(--gold);color:var(--black);}
 
+  .table-scroll{overflow-x:auto;}
+  #tracker td input{min-width:90px;}
+
   /* Metrics grid (worksheet 7) */
   .metric-group{margin-bottom:1.3rem;}
   .metric-group h4{font-family:'Playfair Display',serif;font-weight:600;font-size:1.05rem;color:var(--black);margin-bottom:0.5rem;padding-bottom:0.25rem;border-bottom:1px solid var(--gold);display:inline-block;}
@@ -165,6 +168,7 @@
   @media print{
     body{background:#fff;}
     .toolbar, .add-row, .buy-cta{display:none !important;}
+    .table-scroll{overflow:visible;}
     .sheet{box-shadow:none;margin:0;max-width:100%;padding:0.3in 0.15in;}
     .worksheet{break-before:page;border-bottom:none;padding:0.2in 0 0;}
     .masthead{break-after:avoid;}
@@ -285,12 +289,14 @@
       <h2 class="ws-title">Asset Inventory Tracker</h2>
       <p class="ws-purpose"><b>Purpose.</b> A master record of every asset — what it is, who owns it, what it earns, and where the paperwork lives.</p>
 
+      <div class="table-scroll">
       <table class="grid" id="tracker">
         <thead><tr><th>Asset</th><th>Owner</th><th>Value</th><th>Monthly income</th><th>Risk</th><th>Paperwork location</th></tr></thead>
         <tbody id="tracker-body">
           <!-- rows injected -->
         </tbody>
       </table>
+      </div>
       <button class="add-row" onclick="addTrackerRow()">+ Add asset</button>
       <p class="kicker">Visibility prevents confusion. Confusion destroys continuity.</p>
     </section>
@@ -307,13 +313,13 @@
       <input type="text">
       <label class="field-label">Is that documented legally?</label>
       <div class="yesno">
-        <label><input type="checkbox"> Yes</label>
-        <label><input type="checkbox"> No</label>
+        <label><input type="radio" name="succ-documented" value="yes"> Yes</label>
+        <label><input type="radio" name="succ-documented" value="no"> No</label>
       </div>
       <label class="field-label">Do all adult members understand the transition plan?</label>
       <div class="yesno">
-        <label><input type="checkbox"> Yes</label>
-        <label><input type="checkbox"> No</label>
+        <label><input type="radio" name="succ-understood" value="yes"> Yes</label>
+        <label><input type="radio" name="succ-understood" value="no"> No</label>
       </div>
     </section>
 
@@ -582,7 +588,7 @@
     saveTimer=setTimeout(function(){
       try{
         var data={tracker:document.querySelectorAll('#tracker-body tr').length,fields:[]};
-        allFields().forEach(function(f){ data.fields.push(f.type==='checkbox'?(f.checked?1:0):f.value); });
+        allFields().forEach(function(f){ data.fields.push((f.type==='checkbox'||f.type==='radio')?(f.checked?1:0):f.value); });
         localStorage.setItem(SKEY,JSON.stringify(data));
         flashSaved();
       }catch(e){}
@@ -598,11 +604,11 @@
       var fields=allFields();
       (data.fields||[]).forEach(function(v,idx){
         var f=fields[idx]; if(!f) return;
-        if(f.type==='checkbox') f.checked=(v==1); else f.value=v;
+        if(f.type==='checkbox'||f.type==='radio') f.checked=(v==1); else f.value=v;
       });
     }catch(e){}
   }
-  function clearSaved(){ if(STORAGE_OK){try{localStorage.removeItem(SKEY);}catch(e){}} location.reload(); }
+  function clearSaved(){ if(!confirm('Clear everything you have entered in this workbook? This cannot be undone.')) return; if(STORAGE_OK){try{localStorage.removeItem(SKEY);}catch(e){}} location.reload(); }
   function flashSaved(){
     var s=document.getElementById('save-status'); if(!s) return;
     s.textContent='Saved'; s.style.opacity='1';
