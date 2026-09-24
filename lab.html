@@ -163,12 +163,11 @@
     <button class="skip" onclick="skipToEnd()" title="Skip to summary">Skip ▸</button>
 
     <div class="backdrop kitchen" id="backdrop"></div>
-    <div class="art-note">Scene art placeholder — generated illustration drops in here</div>
 
     <div class="cast" id="cast">
-      <div class="char" data-who="mom"><div class="frame"><div class="silho"></div></div><span class="ph">art</span><span class="tag">Mom</span></div>
-      <div class="char" data-who="you"><div class="frame"><div class="silho"></div></div><span class="ph">art</span><span class="tag">You</span></div>
-      <div class="char" data-who="dad"><div class="frame"><div class="silho"></div></div><span class="ph">art</span><span class="tag">Dad</span></div>
+      <div class="char" data-who="mom"><div class="frame"><div class="silho"></div></div><span class="tag">Mom</span></div>
+      <div class="char" data-who="you"><div class="frame"><div class="silho"></div></div><span class="tag">You</span></div>
+      <div class="char" data-who="dad"><div class="frame"><div class="silho"></div></div><span class="tag">Dad</span></div>
     </div>
 
     <!-- demo -->
@@ -376,7 +375,6 @@ function demoBarter(cap){
     ar.style.opacity='1';ar.style.background='linear-gradient(90deg,transparent,var(--gold),var(--gold))';
     caption(cap);
   },3200);
-  doneDemo();
   setTimeout(doneDemo,4200);
 }
 
@@ -393,7 +391,7 @@ function demoCantBuy(cap){
     T(function(){buy.style.transition='all .5s ease';buy.style.opacity='1';buy.style.transform='translateX(0)';},700+i*500);
     T(function(){cant.style.transition='all .5s ease';cant.style.opacity='1';cant.style.transform='translateX(0)';},1000+i*500);
   });
-  caption(cap);doneDemo();setTimeout(doneDemo,3000);
+  caption(cap);setTimeout(doneDemo,3000);
 }
 
 /* Demo 3 — types of money with risk */
@@ -406,7 +404,7 @@ function demoTypes(cap){
   ];
   types.forEach(function(t,i){
     var c=el('card','<div class="ic">'+t.ic+'</div><div class="lb">'+t.lb+'</div><div class="rk" style="color:'+t.col+'">'+t.rk+'</div>',
-      'left:calc('+(16+i*30)+'% );top:26%;width:120px;opacity:0;transform:translateY(20px);');
+      'left:calc((100% - min(120px, 31%)) * '+(0.05+i*0.45)+');top:26%;width:min(120px, 31%);opacity:0;transform:translateY(20px);');
     s.appendChild(c);
     T(function(){c.style.transition='all .5s ease';c.style.opacity='1';c.style.transform='translateY(0)';},500+i*450);
   });
@@ -422,7 +420,7 @@ function demoTypes(cap){
     path.style.transition='stroke-dashoffset 1.6s ease';svg.appendChild(path);s.appendChild(svg);
     T(function(){path.style.strokeDashoffset='0';},60);
   },1900);
-  caption(cap);doneDemo();setTimeout(doneDemo,4000);
+  caption(cap);setTimeout(doneDemo,4000);
 }
 
 /* Demo 4 — spend fades vs invest grows (the money shot) */

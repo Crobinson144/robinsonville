@@ -98,6 +98,14 @@ h3 {
     color: #C0C0C0;
 }
 
+/* Mobile menu button: hidden on desktop, shown under 768px */
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
 /* Hero */
 .hero-robinsonville {
     min-height: 50vh;
@@ -227,8 +235,25 @@ h3 {
 
 /* Responsive */
 @media (max-width: 768px) {
+    .nav-container {
+        position: relative;
+    }
+
     .nav-links {
         display: none;
+    }
+
+    .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background-color: #000000;
+        border-bottom: 2px solid #C0C0C0;
+        padding: 1.5rem 20px;
+        gap: 1.2rem;
     }
 
     .mobile-menu-btn {
@@ -253,6 +278,14 @@ h3 {
 
     .crest-icon {
         height: 40px;
+    }
+
+    /* keep long button labels (e.g. the email address) inside the screen */
+    .btn {
+        padding: 1rem 1.2rem;
+        letter-spacing: 0.5px;
+        max-width: 100%;
+        overflow-wrap: anywhere;
     }
 }
 

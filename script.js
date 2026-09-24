@@ -1,9 +1,25 @@
+// Mobile menu toggle
+const menuBtn = document.querySelector('.mobile-menu-btn');
+const navList = document.querySelector('.nav-links');
+if (menuBtn && navList) {
+    menuBtn.addEventListener('click', function() {
+        const isOpen = navList.classList.toggle('open');
+        menuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+}
+
 // Smooth scroll for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(link => {
     link.addEventListener('click', function(e) {
         e.preventDefault();
         const targetId = this.getAttribute('href');
         if (targetId === "#") return;
+
+        // close the mobile menu after choosing a link
+        if (navList && navList.classList.contains('open')) {
+            navList.classList.remove('open');
+            if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+        }
         
         const targetElement = document.querySelector(targetId);
         if (targetElement) {
@@ -37,6 +53,3 @@ window.addEventListener('scroll', function() {
         }
     });
 });
-
-// Simple form handler for future use
-console.log('Robinsonville Financial Network loaded');
